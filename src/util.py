@@ -11,6 +11,31 @@ def extract_markdown_links(text: str) -> List[Tuple[str, str]]:
     matches = re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
     return matches
 
+def split_nodes_image(old_nodes: List[TextNode]):
+    result: List[TextNode] = []
+    for node in old_nodes:
+        matches = extract_markdown_images(node.text)
+        text = node.text
+        if len(matches) > 0:
+            for match in matches:
+                image_start_index = text.index(f"![{match[0]}]")
+                text_upto_image = text[:image_start_index]
+
+                result.append(TextNode(text_upto_image, TextType.Text))
+                image_text = match[0]
+                image_url = match[1]
+                result.append(TextNode(image_text, TextType.Image, image_url))
+
+                image_url_end = f"{image_url})"
+                image_end_index = text.index(image_url_end) + len(image_url_end)
+                text = text[image_end_index:]
+            if len(text) > 0:
+                result.append(TextNode(text, TextType.Text))
+        else:
+            result.append(node)
+
+    return result
+
 def text_node_to_html_node(textnode: TextNode) -> LeafNode:
     match textnode.text_type:
         case TextType.Text:
