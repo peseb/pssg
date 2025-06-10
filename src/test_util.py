@@ -99,7 +99,7 @@ class TextTextNodeToHTMLNode(unittest.TestCase):
             new_nodes,
         )
     
-    def test_split_images(self):
+    def test_split_links(self):
         node = TextNode(
                 "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
                 TextType.Text,
@@ -113,6 +113,22 @@ class TextTextNodeToHTMLNode(unittest.TestCase):
                 TextNode(
                     "to youtube", TextType.Link, "https://www.youtube.com/@bootdotdev"
                 ),
+            ],
+            new_nodes,
+        )
+    
+    def test_split_links_no_link(self):
+        node = TextNode(
+                "This is text with no links!",
+                TextType.Text,
+            )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode(
+                "This is text with no links!",
+                TextType.Text,
+            )
             ],
             new_nodes,
         )
