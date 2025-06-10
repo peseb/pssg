@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType
-from util import text_node_to_html_node
+from util import split_nodes_delimiter, text_node_to_html_node
 
 
 class TextTextNodeToHTMLNode(unittest.TestCase):
@@ -11,7 +11,50 @@ class TextTextNodeToHTMLNode(unittest.TestCase):
         self.assertEqual(html_node.tag, None)
         self.assertEqual(html_node.value, "This is a text node")
     
+    def test_split_nodes_delimiter_code(self):
+        node = TextNode("This is text with a `code block` word", TextType.Text)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.Code)
+        self.assertEqual(len(new_nodes), 3)
+
+        self.assertEqual(new_nodes[0].text, "This is text with a ")
+        self.assertEqual(new_nodes[0].text_type, TextType.Text)
+
+        self.assertEqual(new_nodes[1].text, "code block")
+        self.assertEqual(new_nodes[1].text_type, TextType.Code)
+
+        self.assertEqual(new_nodes[2].text, " word")
+        self.assertEqual(new_nodes[2].text_type, TextType.Text)
     
+    def test_split_nodes_delimiter_italic(self):
+        node = TextNode("This is text with a _italic block_ word", TextType.Text)
+        new_nodes = split_nodes_delimiter([node], "_", TextType.Italic)
+        self.assertEqual(len(new_nodes), 3)
+
+        self.assertEqual(new_nodes[0].text, "This is text with a ")
+        self.assertEqual(new_nodes[0].text_type, TextType.Text)
+
+        self.assertEqual(new_nodes[1].text, "italic block")
+        self.assertEqual(new_nodes[1].text_type, TextType.Italic)
+
+        self.assertEqual(new_nodes[2].text, " word")
+        self.assertEqual(new_nodes[2].text_type, TextType.Text)
+
+    def test_split_nodes_delimiter_two_bold(self):
+        node = TextNode("This is text with a *bold* block *word*", TextType.Text)
+        new_nodes = split_nodes_delimiter([node], "*", TextType.Bold)
+        self.assertEqual(len(new_nodes), 4)
+
+        self.assertEqual(new_nodes[0].text, "This is text with a ")
+        self.assertEqual(new_nodes[0].text_type, TextType.Text)
+
+        self.assertEqual(new_nodes[1].text, "bold")
+        self.assertEqual(new_nodes[1].text_type, TextType.Bold)
+
+        self.assertEqual(new_nodes[2].text, " block ")
+        self.assertEqual(new_nodes[2].text_type, TextType.Text)
+
+        self.assertEqual(new_nodes[3].text, "word")
+        self.assertEqual(new_nodes[3].text_type, TextType.Bold)
 
 
 if __name__ == "__main__":
