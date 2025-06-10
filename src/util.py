@@ -1,6 +1,15 @@
-from typing import List
+import re
+from typing import List, Tuple
 from leafnode import LeafNode
 from textnode import TextNode, TextType
+
+def extract_markdown_images(text: str) -> List[Tuple[str, str]]:
+    matches = re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
+    return matches
+
+def extract_markdown_links(text: str) -> List[Tuple[str, str]]:
+    matches = re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
+    return matches
 
 def text_node_to_html_node(textnode: TextNode) -> LeafNode:
     match textnode.text_type:
@@ -30,7 +39,7 @@ def split_nodes_delimiter(old_nodes: List[TextNode], delimiter: str, text_type: 
             current_text_type = TextType.Text if is_even_delimiter_count else text_type
             result.append(TextNode(text[:next_delimiter], current_text_type))
             text = text[next_delimiter + 1:]
-            
+
         if len(text) > 0:
             result.append(TextNode(text, TextType.Text))
 
