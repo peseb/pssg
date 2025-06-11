@@ -118,4 +118,3 @@ def strip_block(block: str):
 
 def markdown_to_blocks(markdown: str):
     return list(map(strip_block, markdown.split("\n\n")))
-
