@@ -95,6 +95,7 @@ def text_to_textnodes(text: str) -> List[TextNode]:
     while len(old_nodes) != len(new_nodes):
         old_nodes = new_nodes.copy()
         generated_nodes: List[TextNode] = []
+        
         generated_nodes = split_nodes_image(old_nodes)
         generated_nodes = split_nodes_link(generated_nodes)
         generated_nodes = split_nodes_delimiter(generated_nodes, "_", TextType.Italic)
@@ -102,8 +103,6 @@ def text_to_textnodes(text: str) -> List[TextNode]:
         generated_nodes = split_nodes_delimiter(generated_nodes, "`", TextType.Code)
 
         new_nodes = (generated_nodes).copy()
-        print("Old nodes: ", len(old_nodes))
-        print("New nodes: ", len(new_nodes))
 
 
     return new_nodes
