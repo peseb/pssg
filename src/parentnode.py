@@ -1,4 +1,4 @@
-from typing import List, Self
+from typing import List
 from htmlnode import HTMLNode
 
 
@@ -14,6 +14,6 @@ class ParentNode(HTMLNode):
         
         child_html = ""
         for child in self.children:
-            child_html += child.to_html()
+            child_html += child.to_html().replace("\n", " ")
         
         return f"<{self.tag}>{child_html}</{self.tag}>"

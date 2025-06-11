@@ -62,3 +62,6 @@ class BlockToBlockType(unittest.TestCase):
         for block in not_headings:
             blocktype = block_to_blocktype(block)
             self.assertNotEqual(blocktype, BlockType.OrderedList)
+
+if __name__ == "__main__":
+    unittest.main()

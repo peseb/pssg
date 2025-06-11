@@ -10,4 +10,9 @@ class LeafNode(HTMLNode):
             raise ValueError("Leaf node must have a value")
         if self.tag is None:
             return self.value
-        return f"<{self.tag}>{self.value}</{self.tag}>"
+        
+        value = self.value
+        if self.tag == "p":
+            value = self.value.replace("\n", "")
+
+        return f"<{self.tag}>{value}</{self.tag}>"

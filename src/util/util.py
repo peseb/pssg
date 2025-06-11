@@ -1,5 +1,6 @@
 import re
 from typing import List, Tuple
+from htmlnode import HTMLNode
 from leafnode import LeafNode
 from textnode import TextNode, TextType
 
@@ -57,7 +58,7 @@ def get_nodes(node: TextNode, text_type: TextType):
         
     return result
 
-def text_node_to_html_node(textnode: TextNode) -> LeafNode:
+def text_node_to_html_node(textnode: TextNode) -> HTMLNode:
     match textnode.text_type:
         case TextType.Text:
             return LeafNode(None, textnode.text)
@@ -67,12 +68,14 @@ def text_node_to_html_node(textnode: TextNode) -> LeafNode:
             return LeafNode("i", textnode.text)
         case TextType.Link:
             return LeafNode("a", textnode.text)
+        case TextType.Code:
+            return LeafNode("code", textnode.text)
         case TextType.Image:
             src = textnode.url if textnode.url != None else ""
             return LeafNode("img", "", {"alt": textnode.text, "src": src})
         case _: pass
     
-    raise Exception("Invalid TextType")
+    raise Exception(f"Invalid TextType: {textnode.text_type}")
 
 
 def split_nodes_delimiter(old_nodes: List[TextNode], delimiter: str, text_type: TextType) -> List[TextNode]:
@@ -117,4 +120,4 @@ def strip_block(block: str):
     return "\n".join(list(filter(lambda x: x is not "", map(lambda x: x.strip(), block.split("\n")))))
 
 def markdown_to_blocks(markdown: str):
-    return list(map(strip_block, markdown.split("\n\n")))
+    return list(filter(lambda x: x is not "", list(map(strip_block, markdown.split("\n\n")))))
