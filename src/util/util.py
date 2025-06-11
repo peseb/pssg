@@ -109,7 +109,7 @@ def text_to_textnodes(text: str) -> List[TextNode]:
         generated_nodes = split_nodes_link(generated_nodes)
         generated_nodes = split_nodes_delimiter(generated_nodes, "_", TextType.Italic)
         generated_nodes = split_nodes_delimiter(generated_nodes, "**", TextType.Bold)
-        generated_nodes = split_nodes_delimiter(generated_nodes, "`", TextType.Code)
+        generated_nodes = split_nodes_delimiter(generated_nodes, "```", TextType.Code)
 
         new_nodes = (generated_nodes).copy()
 

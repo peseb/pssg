@@ -14,6 +14,15 @@ class ParentNode(HTMLNode):
         
         child_html = ""
         for child in self.children:
-            child_html += child.to_html().replace("\n", " ")
+            if self.tag != "code":
+                child_html += child.to_html().replace("\n", " ")
+            else:
+                tag = "" 
+                if child.tag == "i":
+                    tag = "_"
+                if child.tag == "b":
+                    tag = "**"
+
+                child_html += f"{tag}{child.value}{tag}"
         
         return f"<{self.tag}>{child_html}</{self.tag}>"
