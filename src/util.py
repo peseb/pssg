@@ -1,5 +1,5 @@
 import re
-from typing import List, Tuple
+from typing import Callable, List, Tuple
 from leafnode import LeafNode
 from textnode import TextNode, TextType
 
@@ -14,8 +14,7 @@ def extract_markdown_links(text: str) -> List[Tuple[str, str]]:
 def split_nodes_link(old_nodes: List[TextNode]):
     result: List[TextNode] = []
     for node in old_nodes:
-        matches = extract_markdown_links(node.text)
-        nodes = get_nodes(node, matches, TextType.Link)
+        nodes = get_nodes(node, TextType.Link)
         result.extend(nodes)
 
     return result
@@ -23,17 +22,23 @@ def split_nodes_link(old_nodes: List[TextNode]):
 def split_nodes_image(old_nodes: List[TextNode]):
     result: List[TextNode] = []
     for node in old_nodes:
-        matches = extract_markdown_images(node.text)
-        nodes = get_nodes(node, matches, TextType.Image)
+        nodes = get_nodes(node, TextType.Image)
         result.extend(nodes)
 
     return result
 
-def get_nodes(node: TextNode, matches: List[Tuple[str, str]], text_type: TextType):
+def get_nodes(node: TextNode, text_type: TextType):
+    valid_text_types = [TextType.Image, TextType.Link]
+    if text_type not in valid_text_types:
+        raise ValueError(f"TextType must be one of {valid_text_types}")
+    get_matches = extract_markdown_images if text_type is TextType.Image else extract_markdown_links
+    matches = get_matches(node.text)
     text = node.text
     result: List[TextNode] = []
     prefix = "!" if text_type is TextType.Image else ""
-    if len(matches) > 0:
+    if len(matches) == 0:
+        result.append(node)
+    else:
         for match in matches:
             image_start_index = text.index(f"{prefix}[{match[0]}]")
             text_upto_image = text[:image_start_index]
@@ -48,8 +53,7 @@ def get_nodes(node: TextNode, matches: List[Tuple[str, str]], text_type: TextTyp
             text = text[image_end_index:]
         if len(text) > 0:
             result.append(TextNode(text, TextType.Text))
-    else:
-        result.append(node)
+        
     return result
 
 def text_node_to_html_node(textnode: TextNode) -> LeafNode:
@@ -76,16 +80,17 @@ def split_nodes_delimiter(old_nodes: List[TextNode], delimiter: str, text_type: 
         text = node.text
         if delimiter not in text:
             result.append(node)
-        else:
-            while delimiter in text:
-                next_delimiter = text.index(delimiter)
-                is_even_delimiter_count = text.count(delimiter) % 2 == 0  
-                current_text_type = TextType.Text if is_even_delimiter_count else text_type
-                result.append(TextNode(text[:next_delimiter], current_text_type))
-                text = text[next_delimiter + len(delimiter):]
+            continue
 
-            if len(text) > 0:
-                result.append(TextNode(text, TextType.Text))
+        while delimiter in text:
+            next_delimiter = text.index(delimiter)
+            is_even_delimiter_count = text.count(delimiter) % 2 == 0  
+            current_text_type = TextType.Text if is_even_delimiter_count else text_type
+            result.append(TextNode(text[:next_delimiter], current_text_type))
+            text = text[next_delimiter + len(delimiter):]
+
+        if len(text) > 0:
+            result.append(TextNode(text, TextType.Text))
 
     return result
 
@@ -95,7 +100,7 @@ def text_to_textnodes(text: str) -> List[TextNode]:
     while len(old_nodes) != len(new_nodes):
         old_nodes = new_nodes.copy()
         generated_nodes: List[TextNode] = []
-        
+
         generated_nodes = split_nodes_image(old_nodes)
         generated_nodes = split_nodes_link(generated_nodes)
         generated_nodes = split_nodes_delimiter(generated_nodes, "_", TextType.Italic)
