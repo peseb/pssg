@@ -31,9 +31,10 @@ def get_nodes(node: TextNode, text_type: TextType):
     valid_text_types = [TextType.Image, TextType.Link]
     if text_type not in valid_text_types:
         raise ValueError(f"TextType must be one of {valid_text_types}")
-    get_matches = extract_markdown_images if text_type is TextType.Image else extract_markdown_links
-    matches = get_matches(node.text)
+    
     text = node.text
+    get_matches = extract_markdown_images if text_type is TextType.Image else extract_markdown_links
+    matches = get_matches(text)
     result: List[TextNode] = []
     prefix = "!" if text_type is TextType.Image else ""
     if len(matches) == 0:
