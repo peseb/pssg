@@ -36,11 +36,11 @@ def get_nodes(node: TextNode, text_type: TextType):
     get_matches = extract_markdown_images if text_type is TextType.Image else extract_markdown_links
     matches = get_matches(text)
     result: List[TextNode] = []
-    prefix = "!" if text_type is TextType.Image else ""
     if len(matches) == 0:
         result.append(node)
     else:
         for match in matches:
+            prefix = "!" if text_type is TextType.Image else ""
             image_start_index = text.index(f"{prefix}[{match[0]}]")
             text_upto_image = text[:image_start_index]
 
