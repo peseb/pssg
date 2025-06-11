@@ -15,7 +15,7 @@ def split_nodes_link(old_nodes: List[TextNode]):
     result: List[TextNode] = []
     for node in old_nodes:
         matches = extract_markdown_links(node.text)
-        nodes = get_nodes(node.text, matches, TextType.Link)
+        nodes = get_nodes(node, matches, TextType.Link)
         result.extend(nodes)
 
     return result
@@ -24,12 +24,13 @@ def split_nodes_image(old_nodes: List[TextNode]):
     result: List[TextNode] = []
     for node in old_nodes:
         matches = extract_markdown_images(node.text)
-        nodes = get_nodes(node.text, matches, TextType.Image)
+        nodes = get_nodes(node, matches, TextType.Image)
         result.extend(nodes)
 
     return result
 
-def get_nodes(text: str, matches: List[Tuple[str, str]], text_type: TextType):
+def get_nodes(node: TextNode, matches: List[Tuple[str, str]], text_type: TextType):
+    text = node.text
     result: List[TextNode] = []
     prefix = "!" if text_type is TextType.Image else ""
     if len(matches) > 0:
@@ -48,7 +49,7 @@ def get_nodes(text: str, matches: List[Tuple[str, str]], text_type: TextType):
         if len(text) > 0:
             result.append(TextNode(text, TextType.Text))
     else:
-        result.append(TextNode(text, TextType.Text))
+        result.append(node)
     return result
 
 def text_node_to_html_node(textnode: TextNode) -> LeafNode:
@@ -73,14 +74,39 @@ def split_nodes_delimiter(old_nodes: List[TextNode], delimiter: str, text_type: 
     result: List[TextNode] = []
     for node in old_nodes:
         text = node.text
-        while delimiter in text:
-            next_delimiter = text.index(delimiter)
-            is_even_delimiter_count = text.count(delimiter) % 2 == 0  
-            current_text_type = TextType.Text if is_even_delimiter_count else text_type
-            result.append(TextNode(text[:next_delimiter], current_text_type))
-            text = text[next_delimiter + 1:]
+        if delimiter not in text:
+            result.append(node)
+        else:
+            while delimiter in text:
+                next_delimiter = text.index(delimiter)
+                is_even_delimiter_count = text.count(delimiter) % 2 == 0  
+                current_text_type = TextType.Text if is_even_delimiter_count else text_type
+                result.append(TextNode(text[:next_delimiter], current_text_type))
+                text = text[next_delimiter + len(delimiter):]
 
-        if len(text) > 0:
-            result.append(TextNode(text, TextType.Text))
+            if len(text) > 0:
+                result.append(TextNode(text, TextType.Text))
 
     return result
+
+def text_to_textnodes(text: str) -> List[TextNode]:
+    old_nodes: List[TextNode] = []
+    new_nodes: List[TextNode] = [TextNode(text, TextType.Text)]
+    while len(old_nodes) != len(new_nodes):
+        old_nodes = new_nodes.copy()
+        generated_nodes: List[TextNode] = []
+        generated_nodes = split_nodes_image(old_nodes)
+        generated_nodes = split_nodes_link(generated_nodes)
+        generated_nodes = split_nodes_delimiter(generated_nodes, "_", TextType.Italic)
+        generated_nodes = split_nodes_delimiter(generated_nodes, "**", TextType.Bold)
+        generated_nodes = split_nodes_delimiter(generated_nodes, "`", TextType.Code)
+
+        new_nodes = (generated_nodes).copy()
+        print("Old nodes: ", len(old_nodes))
+        print("New nodes: ", len(new_nodes))
+
+
+    return new_nodes
+
+
+

@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType
-from util import extract_markdown_images, extract_markdown_links, split_nodes_delimiter, split_nodes_image, split_nodes_link, text_node_to_html_node
+from util import extract_markdown_images, extract_markdown_links, split_nodes_delimiter, split_nodes_image, split_nodes_link, text_node_to_html_node, text_to_textnodes
 
 
 class TextTextNodeToHTMLNode(unittest.TestCase):
@@ -131,6 +131,25 @@ class TextTextNodeToHTMLNode(unittest.TestCase):
             )
             ],
             new_nodes,
+        )
+
+    def test_text_to_textnodes(self):
+        nodes = text_to_textnodes("This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)")
+        print("Nodes: ", nodes)
+        self.assertListEqual(
+            [
+                TextNode("This is ", TextType.Text),
+                TextNode("text", TextType.Bold),
+                TextNode(" with an ", TextType.Text),
+                TextNode("italic", TextType.Italic),
+                TextNode(" word and a ", TextType.Text),
+                TextNode("code block", TextType.Code),
+                TextNode(" and an ", TextType.Text),
+                TextNode("obi wan image", TextType.Image, "https://i.imgur.com/fJRm4Vk.jpeg"),
+                TextNode(" and a ", TextType.Text),
+                TextNode("link", TextType.Link, "https://boot.dev"),
+            ],
+            nodes,
         )
 
 
