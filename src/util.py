@@ -1,5 +1,5 @@
 import re
-from typing import Callable, List, Tuple
+from typing import List, Tuple
 from leafnode import LeafNode
 from textnode import TextNode, TextType
 
