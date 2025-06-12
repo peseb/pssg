@@ -60,20 +60,21 @@ def get_nodes(node: TextNode, text_type: TextType):
     return result
 
 def text_node_to_html_node(textnode: TextNode) -> HTMLNode:
+    text = textnode.text.removeprefix("\n")
     match textnode.text_type:
         case TextType.Text:
-            return LeafNode(None, textnode.text)
+            return LeafNode(None, text)
         case TextType.Bold:
-            return LeafNode("b", textnode.text)
+            return LeafNode("b", text)
         case TextType.Italic:
-            return LeafNode("i", textnode.text)
+            return LeafNode("i", text)
         case TextType.Link:
-            return LeafNode("a", textnode.text)
+            return LeafNode("a", text)
         case TextType.Code:
-            return LeafNode("code", textnode.text)
+            return LeafNode("code", text)
         case TextType.Image:
             src = textnode.url if textnode.url != None else ""
-            return LeafNode("img", "", {"alt": textnode.text, "src": src})
+            return LeafNode("img", "", {"alt": text, "src": src})
         case _: pass
     
     raise Exception(f"Invalid TextType: {textnode.text_type}")

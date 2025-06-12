@@ -14,6 +14,7 @@ class ParentNode(HTMLNode):
         
         child_html = ""
         for child in self.children:
-            child_html += child.to_html().replace("\n", " ")
+            child_html += child.to_html()
         
+        print("CHILD HTML: ", child_html)
         return f"<{self.tag}>{child_html}</{self.tag}>"
