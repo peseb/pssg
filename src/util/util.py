@@ -3,6 +3,7 @@ from typing import List, Tuple
 from htmlnode import HTMLNode
 from leafnode import LeafNode
 from textnode import TextNode, TextType
+from util.block_to_blocktype import block_to_blocktype
 
 def extract_markdown_images(text: str) -> List[Tuple[str, str]]:
     matches = re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
@@ -82,6 +83,9 @@ def split_nodes_delimiter(old_nodes: List[TextNode], delimiter: str, text_type: 
     result: List[TextNode] = []
     for node in old_nodes:
         text = node.text
+        if node.text_type == TextType.Code:
+            result.append(node)
+            continue
         if delimiter not in text:
             result.append(node)
             continue
@@ -90,12 +94,16 @@ def split_nodes_delimiter(old_nodes: List[TextNode], delimiter: str, text_type: 
             next_delimiter = text.index(delimiter)
             is_even_delimiter_count = text.count(delimiter) % 2 == 0  
             current_text_type = TextType.Text if is_even_delimiter_count else text_type
-            result.append(TextNode(text[:next_delimiter], current_text_type))
+
+            current_text = text[:next_delimiter]
+            if len(current_text) > 0:
+                result.append(TextNode(current_text, current_text_type))
+
             text = text[next_delimiter + len(delimiter):]
 
         if len(text) > 0:
             result.append(TextNode(text, TextType.Text))
-
+    
     return result
 
 def text_to_textnodes(text: str) -> List[TextNode]:
@@ -105,11 +113,12 @@ def text_to_textnodes(text: str) -> List[TextNode]:
         old_nodes = new_nodes.copy()
         generated_nodes: List[TextNode] = []
 
-        generated_nodes = split_nodes_image(old_nodes)
-        generated_nodes = split_nodes_link(generated_nodes)
+        generated_nodes = split_nodes_delimiter(old_nodes, "```", TextType.Code)
+        generated_nodes = split_nodes_delimiter(generated_nodes, "`", TextType.Code)
         generated_nodes = split_nodes_delimiter(generated_nodes, "_", TextType.Italic)
         generated_nodes = split_nodes_delimiter(generated_nodes, "**", TextType.Bold)
-        generated_nodes = split_nodes_delimiter(generated_nodes, "```", TextType.Code)
+        generated_nodes = split_nodes_image(generated_nodes)
+        generated_nodes = split_nodes_link(generated_nodes)
 
         new_nodes = (generated_nodes).copy()
 
@@ -117,7 +126,7 @@ def text_to_textnodes(text: str) -> List[TextNode]:
     return new_nodes
 
 def strip_block(block: str):
-    return "\n".join(list(filter(lambda x: x is not "", map(lambda x: x.strip(), block.split("\n")))))
+    return "\n".join(list(filter(lambda x: x != "", map(lambda x: x.strip(), block.split("\n")))))
 
 def markdown_to_blocks(markdown: str):
-    return list(filter(lambda x: x is not "", list(map(strip_block, markdown.split("\n\n")))))
+    return list(filter(lambda x: x != "", list(map(strip_block, markdown.split("\n\n")))))
