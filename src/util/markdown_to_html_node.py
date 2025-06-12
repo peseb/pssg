@@ -19,12 +19,9 @@ def markdown_to_html_node(markdown: str) -> HTMLNode:
         parent_node.children.append(surrounding_block) # type: ignore
 
         text_nodes = text_to_textnodes(block)
-        print("TextNodes: ", text_nodes)
         for text in text_nodes:
             html_node = text_node_to_html_node(text)
-            print("HTML_Node: ", html_node)
             surrounding_block.children.append(html_node) # type: ignore
     
-    print("ParentNode: ", parent_node)
     return parent_node
 

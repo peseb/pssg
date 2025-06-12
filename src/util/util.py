@@ -63,7 +63,7 @@ def text_node_to_html_node(textnode: TextNode) -> HTMLNode:
     text = textnode.text.removeprefix("\n")
     match textnode.text_type:
         case TextType.Text:
-            return LeafNode(None, text)
+            return LeafNode(None, text.replace("\n", " "))
         case TextType.Bold:
             return LeafNode("b", text)
         case TextType.Italic:
