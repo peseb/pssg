@@ -69,12 +69,15 @@ def text_node_to_html_node(textnode: TextNode) -> HTMLNode:
         case TextType.Italic:
             return LeafNode("i", text)
         case TextType.Link:
-            return LeafNode("a", text)
+            href = textnode.url if textnode.url else ""
+            return LeafNode("a", text, {"href": href, "target": "_blank"})
         case TextType.Code:
             return LeafNode("code", text)
         case TextType.Image:
             src = textnode.url if textnode.url != None else ""
-            return LeafNode("img", "", {"alt": text, "src": src})
+            img = LeafNode("img", "", {"alt": text, "src": src})
+            print("Image: ", img)
+            return img
         case _: pass
     
     raise Exception(f"Invalid TextType: {textnode.text_type}")

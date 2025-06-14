@@ -11,6 +11,8 @@ def find_heading(node: HTMLNode) -> str:
     heading = ""
     for c in node.children:
         heading = find_heading(c)
+        if heading:
+            return heading
     
     return heading
 
@@ -21,6 +23,5 @@ def extract_title(markdown: str):
     if heading:
         return heading.removeprefix("# ")
     
-    print("Heading: ", heading)
     raise Exception("No header found")
          
