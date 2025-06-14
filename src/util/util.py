@@ -3,7 +3,6 @@ from typing import List, Tuple
 from htmlnode import HTMLNode
 from leafnode import LeafNode
 from textnode import TextNode, TextType
-from util.block_to_blocktype import block_to_blocktype
 
 def extract_markdown_images(text: str) -> List[Tuple[str, str]]:
     matches = re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)", text)

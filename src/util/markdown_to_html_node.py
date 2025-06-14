@@ -24,7 +24,11 @@ def markdown_to_html_node(markdown: str) -> HTMLNode:
 
         
         if block_type == BlockType.UnorderedList or block_type == BlockType.OrderedList:
-            items = list(filter(lambda x: x, block.split("- ")))
+            if block_type == BlockType.UnorderedList:
+                items = list(filter(lambda x: x, map(lambda x: x.strip(), block.split("- "))))
+            else:
+                items = list(filter(lambda x: x, map(lambda x: x[1:-1].strip(), block.split("."))))
+
             for item in items:
                 text_nodes = text_to_textnodes(item)
                 list_item_node = ParentNode("li", [])
@@ -36,6 +40,8 @@ def markdown_to_html_node(markdown: str) -> HTMLNode:
         else:
             text_nodes = text_to_textnodes(block)
             for text in text_nodes:
+                if block_type == BlockType.Quote:
+                    text.text = text.text.replace("> ", "")
                 html_node = text_node_to_html_node(text)
                 surrounding_block.children.append(html_node) # type: ignore
     
