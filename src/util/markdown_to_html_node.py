@@ -6,8 +6,9 @@ from util.util import markdown_to_blocks, text_node_to_html_node, text_to_textno
 
 def get_block_type(blocktype: BlockType, block: str):
     match blocktype:
-        case BlockType.Code: return "pre"
         case BlockType.Heading: return f"h{block.count("#", 0, 6)}"
+        case BlockType.Code: return "pre"
+        case BlockType.UnorderedList: return f"ul"
         case _: pass
     return "p"
 
