@@ -34,7 +34,6 @@ def markdown_to_html_node(markdown: str) -> HTMLNode:
                     
                 surrounding_block.children.append(list_item_node) # type: ignore
         else:
-            print("ELSE")
             text_nodes = text_to_textnodes(block)
             for text in text_nodes:
                 html_node = text_node_to_html_node(text)
