@@ -15,4 +15,5 @@ class LeafNode(HTMLNode):
         if self.tag == "p":
             value = self.value.replace("\n", "")
 
-        return f"<{self.tag} {self.props_to_html()}>{value}</{self.tag}>"
+        props = self.props_to_html()
+        return f"<{self.tag}{f" {props}" if len(props) > 0 else ""}>{value}</{self.tag}>"

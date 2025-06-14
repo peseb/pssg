@@ -9,6 +9,8 @@ def get_block_type(blocktype: BlockType, block: str):
         case BlockType.Heading: return f"h{block.count("#", 0, 6)}"
         case BlockType.Code: return "pre"
         case BlockType.UnorderedList: return f"ul"
+        case BlockType.OrderedList: return f"ol"
+        case BlockType.Quote: return f"blockquote"
         case _: pass
     return "p"
 
@@ -20,7 +22,11 @@ def markdown_to_html_node(markdown: str) -> HTMLNode:
         surrounding_block = ParentNode(get_block_type(block_type, block), [])
         parent_node.children.append(surrounding_block) # type: ignore
 
+        
         text_nodes = text_to_textnodes(block)
+        if block_type == BlockType.UnorderedList:
+            print("Block: ", block)
+            print("text_nodes: ", text_nodes)
         for text in text_nodes:
             html_node = text_node_to_html_node(text)
             surrounding_block.children.append(html_node) # type: ignore
