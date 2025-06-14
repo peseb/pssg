@@ -20,7 +20,7 @@ def block_to_blocktype(block_markdown: str) -> BlockType:
     if block_markdown.startswith("```") and block_markdown.endswith("```"): return BlockType.Code
 
     lines = block_markdown.split("\n")
-    quotes = list(filter(lambda x: x.startswith("> "), lines))
+    quotes = list(filter(lambda x: x.startswith(">"), lines))
     if len(quotes) == len(lines):
         return BlockType.Quote
     

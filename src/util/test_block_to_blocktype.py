@@ -36,7 +36,7 @@ class BlockToBlockType(unittest.TestCase):
             blocktype = block_to_blocktype(block)
             self.assertEqual(blocktype, BlockType.Quote)
         
-        not_headings = [">Not quote", "> Quote\n>Not quote"]
+        not_headings = ["Not quote", "> Quote\nNot quote"]
         for block in not_headings:
             blocktype = block_to_blocktype(block)
             self.assertNotEqual(blocktype, BlockType.Quote)
@@ -63,5 +63,3 @@ class BlockToBlockType(unittest.TestCase):
             blocktype = block_to_blocktype(block)
             self.assertNotEqual(blocktype, BlockType.OrderedList)
 
-if __name__ == "__main__":
-    unittest.main()
