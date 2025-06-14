@@ -23,13 +23,22 @@ def markdown_to_html_node(markdown: str) -> HTMLNode:
         parent_node.children.append(surrounding_block) # type: ignore
 
         
-        text_nodes = text_to_textnodes(block)
-        if block_type == BlockType.UnorderedList:
-            print("Block: ", block)
-            print("text_nodes: ", text_nodes)
-        for text in text_nodes:
-            html_node = text_node_to_html_node(text)
-            surrounding_block.children.append(html_node) # type: ignore
+        if block_type == BlockType.UnorderedList or block_type == BlockType.OrderedList:
+            items = list(filter(lambda x: x, block.split("- ")))
+            for item in items:
+                text_nodes = text_to_textnodes(item)
+                list_item_node = ParentNode("li", [])
+                for text in text_nodes:
+                    html_node = text_node_to_html_node(text)
+                    list_item_node.children.append(html_node) # type: ignore
+                    
+                surrounding_block.children.append(list_item_node) # type: ignore
+        else:
+            print("ELSE")
+            text_nodes = text_to_textnodes(block)
+            for text in text_nodes:
+                html_node = text_node_to_html_node(text)
+                surrounding_block.children.append(html_node) # type: ignore
     
     return parent_node
 
