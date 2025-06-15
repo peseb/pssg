@@ -39,7 +39,7 @@ def generate_page(basepath: str, from_path: str, template_path: str, dest_path: 
     f.write(template)
 
 def copy_to_public():
-    destination = "public"
+    destination = "docs"
     src_dir = "static"
     public_exists = os.path.exists(destination)
     if public_exists:
@@ -55,8 +55,7 @@ def main():
     if len(args) > 0:
         basepath = args[0]
     
-
     copy_to_public()
-    generate_pages_recursive(basepath, "content", "template.html", "public")
+    generate_pages_recursive(basepath, "content", "template.html", "docs")
 
 main()
