@@ -137,20 +137,20 @@ def strip_block(block: str):
 def markdown_to_blocks(markdown: str):
     return list(filter(lambda x: x != "", list(map(strip_block, markdown.split("\n\n")))))
 
-def generate_pages_recursive(dir_path_content: str, template_path: str, dest_dir_path: str):
+def generate_pages_recursive(basepath: str, dir_path_content: str, template_path: str, dest_dir_path: str):
     if os.path.isfile(dir_path_content):
         path = os.path.join(dest_dir_path.replace(".md", ".html"))
         print("Generated file at: ", path)
-        generate_page(dir_path_content, template_path, path)
+        generate_page(basepath, dir_path_content, template_path, path)
     else:
         dir = os.listdir(dir_path_content)
         for entry in dir:
             print("Files: ", entry)
             content_path = os.path.join(dir_path_content, entry)
             dest_path = os.path.join(dest_dir_path, entry)
-            generate_pages_recursive(content_path, template_path, dest_path)
+            generate_pages_recursive(basepath, content_path, template_path, dest_path)
 
-def generate_page(from_path: str, template_path: str, dest_path: str):
+def generate_page(basepath: str, from_path: str, template_path: str, dest_path: str):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     f = open(from_path)
     markdown = f.read()
@@ -164,6 +164,8 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
     print("html: ", html)
     template = template.replace("{{ Title }}", title)
     template = template.replace("{{ Content }}", html)
+    template = template.replace("href=\"/", f"href=\"{basepath}")
+    template = template.replace("src=\"/", f"src=\"{basepath}")
 
     dirname = os.path.dirname(dest_path)
     
