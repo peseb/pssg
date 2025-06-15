@@ -52,9 +52,10 @@ def copy_to_public():
 def main():
     basepath = "/"
     args = sys.argv
-    if len(args) > 0:
-        basepath = args[0]
-    
+    print(args)
+    if len(args) > 1:
+        basepath = args[1]
+
     copy_to_public()
     generate_pages_recursive(basepath, "content", "template.html", "docs")
 
