@@ -68,8 +68,9 @@ def text_node_to_html_node(textnode: TextNode) -> HTMLNode:
         case TextType.Italic:
             return LeafNode("i", text)
         case TextType.Link:
-            href = textnode.url if textnode.url else ""
-            return LeafNode("a", text, {"href": href, "target": "_blank"})
+            url = textnode.url if textnode.url else ""
+            target = "" if url.startswith("/") else "_blank"
+            return LeafNode("a", text, {"href": url, "target": target})
         case TextType.Code:
             return LeafNode("code", text)
         case TextType.Image:
