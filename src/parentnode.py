@@ -17,7 +17,6 @@ class ParentNode(HTMLNode):
             child_html += child.to_html()
 
         if self.tag.startswith("h"):
-            print("Child html: ", child_html)
             child_html = child_html.replace("#", "").strip()
         
         return f"<{self.tag}>{child_html}</{self.tag}>"
